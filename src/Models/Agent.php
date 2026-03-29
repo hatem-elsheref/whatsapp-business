@@ -2,17 +2,21 @@
 
 namespace WhatsApp\Business\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Agent extends Model
+class Agent extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $table = 'wa_agents';
 
     protected $fillable = [
         'customer_id',
-        'user_id',
         'name',
         'email',
         'password',
@@ -21,6 +25,7 @@ class Agent extends Model
         'is_active',
         'pusher_channel',
         'last_active_at',
+        'remember_token',
     ];
 
     protected $casts = [

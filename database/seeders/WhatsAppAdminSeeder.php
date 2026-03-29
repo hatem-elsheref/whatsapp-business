@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace WhatsApp\Business\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
