@@ -49,10 +49,6 @@ class WhatsAppServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../Config/whatsapp.php' => config_path('whatsapp.php'),
         ], 'whatsapp-config');
-
-        $this->publishes([
-            __DIR__ . '/../Database/Migrations/' => database_path('migrations'),
-        ], 'whatsapp-migrations');
     }
 
     protected function registerRoutes(): void

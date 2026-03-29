@@ -6,23 +6,27 @@ A comprehensive WhatsApp Business SaaS package for Laravel with multi-tenant sup
 
 1. Add the package to your Laravel project:
 ```bash
-composer require whatsapp/business
+composer require hatem-elsheref/whatsapp-business
 ```
 
-2. Publish the configuration:
-```bash
-php artisan vendor:publish --tag=whatsapp-config
-php artisan vendor:publish --tag=whatsapp-migrations
-```
-
-3. Run migrations:
+2. Run migrations (migrations run automatically):
 ```bash
 php artisan migrate
 ```
 
+3. Seed default admin user (optional):
+```bash
+php artisan db:seed --class=WhatsAppBusinessSeeder
+```
+
 ## Configuration
 
-Add these environment variables to your `.env` file:
+1. Publish the configuration:
+```bash
+php artisan vendor:publish --tag=whatsapp-config
+```
+
+2. Add these environment variables to your `.env` file:
 
 ```env
 # Meta/WhatsApp Cloud API
@@ -45,6 +49,7 @@ PUSHER_CLUSTER=mt1
 
 - **Multi-Tenant Architecture**: Each customer has their own isolated data
 - **Facebook OAuth**: Customers connect via Facebook Login
+- **Manual Setup**: Enter App ID, App Secret, and Access Token directly
 - **Multi-Number Support**: Connect multiple WhatsApp numbers
 - **Conversation Management**: Full inbox system with assignment
 - **Template Messages**: Send WhatsApp-approved templates
@@ -61,8 +66,14 @@ PUSHER_CLUSTER=mt1
 - `POST /api/wa/webhook` - Handle incoming messages
 - `GET /api/wa/oauth/redirect` - Redirect to Facebook OAuth
 - `GET /api/wa/oauth/callback` - OAuth callback
+- `POST /api/wa/oauth/manual-setup` - Manual setup with access token
 
 ### Protected Endpoints (require Sanctum token)
+
+#### Auth
+- `POST /api/wa/api/auth/login` - Login
+- `POST /api/wa/api/auth/logout` - Logout
+- `GET /api/wa/api/auth/me` - Get current user
 
 #### Conversations
 - `GET /api/wa/api/conversations` - List conversations
@@ -71,34 +82,60 @@ PUSHER_CLUSTER=mt1
 - `POST /api/wa/api/conversations/{id}/messages` - Send message
 - `POST /api/wa/api/conversations/{id}/assign` - Assign agent
 - `POST /api/wa/api/conversations/{id}/archive` - Archive
+- `POST /api/wa/api/conversations/{id}/block` - Block
 
 #### Templates
 - `GET /api/wa/api/templates` - List templates
 - `GET /api/wa/api/templates/sync` - Sync from Meta
+- `GET /api/wa/api/templates/{id}` - Get template
 - `POST /api/wa/api/templates/{id}/send` - Send template
 
 #### Phone Numbers
 - `GET /api/wa/api/phone-numbers` - List numbers
+- `GET /api/wa/api/phone-numbers/sync` - Sync from Meta
+- `GET /api/wa/api/phone-numbers/{id}` - Get number
 - `POST /api/wa/api/phone-numbers/{id}/webhook/test` - Test webhook
+- `DELETE /api/wa/api/phone-numbers/{id}` - Remove number
+
+#### Quick Replies
+- `GET /api/wa/api/quick-replies` - List quick replies
+- `POST /api/wa/api/quick-replies` - Create
+- `PUT /api/wa/api/quick-replies/{id}` - Update
+- `DELETE /api/wa/api/quick-replies/{id}` - Delete
 
 #### Flows
 - `GET /api/wa/api/flows` - List flows
 - `POST /api/wa/api/flows` - Create flow
+- `GET /api/wa/api/flows/{id}` - Get flow
 - `PUT /api/wa/api/flows/{id}` - Update flow
+- `DELETE /api/wa/api/flows/{id}` - Delete flow
 - `POST /api/wa/api/flows/{id}/toggle` - Enable/disable
+- `POST /api/wa/api/flows/{id}/steps` - Update steps
 
 #### Tickets
 - `GET /api/wa/api/tickets` - List tickets
 - `POST /api/wa/api/tickets` - Create ticket
+- `GET /api/wa/api/tickets/{id}` - Get ticket
+- `PUT /api/wa/api/tickets/{id}` - Update ticket
+- `POST /api/wa/api/tickets/{id}/assign` - Assign agent
 - `POST /api/wa/api/tickets/{id}/resolve` - Resolve ticket
+- `POST /api/wa/api/tickets/{id}/close` - Close ticket
 
 #### Agents
 - `GET /api/wa/api/agents` - List agents
-- `POST /api/wa/api/agents` - Invite agent
+- `POST /api/wa/api/agents` - Create agent
+- `PUT /api/wa/api/agents/{id}` - Update agent
+- `DELETE /api/wa/api/agents/{id}` - Delete agent
+
+#### Notifications
+- `GET /api/wa/api/notifications` - List notifications
+- `PUT /api/wa/api/notifications/{id}/read` - Mark as read
+- `PUT /api/wa/api/notifications/read-all` - Mark all as read
 
 #### Analytics
 - `GET /api/wa/api/analytics/overview` - Dashboard overview
 - `GET /api/wa/api/analytics/messages` - Message stats
+- `GET /api/wa/api/analytics/conversations` - Conversation stats
 - `GET /api/wa/api/analytics/agents` - Agent performance
 
 ## Usage
@@ -124,6 +161,20 @@ use WhatsApp\Business\Services\FlowEngine;
 
 $flowEngine = app(FlowEngine::class);
 $flowEngine->startFlow($flow, $conversation);
+```
+
+### Manual Setup (Without OAuth)
+
+```php
+use WhatsApp\Business\Services\OAuthService;
+
+$service = app(OAuthService::class);
+
+$result = $service->manualSetup($customerId, [
+    'app_id' => 'your_app_id',
+    'app_secret' => 'your_app_secret',
+    'access_token' => 'your_permanent_access_token',
+]);
 ```
 
 ## Broadcasting (Real-time)
@@ -156,6 +207,31 @@ Echo.private(`whatsapp.agent.${agentId}`)
   });
 ```
 
+## Database Tables
+
+The package creates the following tables:
+
+- `wa_customers` - Customer accounts
+- `wa_agents` - Agent accounts
+- `wa_phone_numbers` - WhatsApp phone numbers
+- `wa_templates` - Message templates
+- `wa_quick_replies` - Quick reply messages
+- `wa_flows` - Automated conversation flows
+- `wa_flow_steps` - Flow steps
+- `wa_flow_user_data` - User flow progress
+- `wa_conversations` - Customer conversations
+- `wa_messages` - Messages
+- `wa_tickets` - Support tickets
+- `wa_ticket_messages` - Ticket messages
+- `wa_notifications` - Notifications
+- `wa_analytics_events` - Analytics events
+
+## Default Credentials
+
+After seeding:
+- Admin: `admin@whatsapp.local` / `admin123`
+- Agent: `agent@whatsapp.local` / `agent123`
+
 ## Testing
 
 ```bash
@@ -167,17 +243,9 @@ Or with Orchestra Testbench:
 vendor/bin/phpunit
 ```
 
-## Service Providers
+## Auto-Discovery
 
-Register the providers in your `config/app.php`:
-
-```php
-'providers' => [
-    // ...
-    WhatsApp\Business\Providers\WhatsAppServiceProvider::class,
-    WhatsApp\Business\Providers\WhatsAppEventServiceProvider::class,
-],
-```
+Laravel 5.5+ auto-discovers the service providers. No manual registration needed.
 
 ## License
 
