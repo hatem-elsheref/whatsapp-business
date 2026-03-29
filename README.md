@@ -71,9 +71,9 @@ PUSHER_CLUSTER=mt1
 ### Protected Endpoints (require Sanctum token)
 
 #### Auth
-- `POST /api/wa/api/auth/login` - Login
-- `POST /api/wa/api/auth/logout` - Logout
-- `GET /api/wa/api/auth/me` - Get current user
+- `POST /api/wa/auth/login` - Login
+- `POST /api/wa/auth/logout` - Logout
+- `GET /api/wa/auth/me` - Get current user
 
 #### Conversations
 - `GET /api/wa/api/conversations` - List conversations
