@@ -1,5 +1,5 @@
 {
-    "name": "whatsapp/business",
+    "name": "hatem-elsheref/whatsapp-business",
     "description": "WhatsApp Business SaaS Platform for Laravel - Multi-tenant, OAuth, WhatsApp Cloud API integration",
     "type": "library",
     "license": "MIT",
