@@ -76,67 +76,67 @@ PUSHER_CLUSTER=mt1
 - `GET /api/wa/auth/me` - Get current user
 
 #### Conversations
-- `GET /api/wa/api/conversations` - List conversations
-- `GET /api/wa/api/conversations/{id}` - Get conversation
-- `GET /api/wa/api/conversations/{id}/messages` - Get messages
-- `POST /api/wa/api/conversations/{id}/messages` - Send message
-- `POST /api/wa/api/conversations/{id}/assign` - Assign agent
-- `POST /api/wa/api/conversations/{id}/archive` - Archive
-- `POST /api/wa/api/conversations/{id}/block` - Block
+- `GET /api/wa/conversations` - List conversations
+- `GET /api/wa/conversations/{id}` - Get conversation
+- `GET /api/wa/conversations/{id}/messages` - Get messages
+- `POST /api/wa/conversations/{id}/messages` - Send message
+- `POST /api/wa/conversations/{id}/assign` - Assign agent
+- `POST /api/wa/conversations/{id}/archive` - Archive
+- `POST /api/wa/conversations/{id}/block` - Block
 
 #### Templates
-- `GET /api/wa/api/templates` - List templates
-- `GET /api/wa/api/templates/sync` - Sync from Meta
-- `GET /api/wa/api/templates/{id}` - Get template
-- `POST /api/wa/api/templates/{id}/send` - Send template
+- `GET /api/wa/templates` - List templates
+- `GET /api/wa/templates/sync` - Sync from Meta
+- `GET /api/wa/templates/{id}` - Get template
+- `POST /api/wa/templates/{id}/send` - Send template
 
 #### Phone Numbers
-- `GET /api/wa/api/phone-numbers` - List numbers
-- `GET /api/wa/api/phone-numbers/sync` - Sync from Meta
-- `GET /api/wa/api/phone-numbers/{id}` - Get number
-- `POST /api/wa/api/phone-numbers/{id}/webhook/test` - Test webhook
-- `DELETE /api/wa/api/phone-numbers/{id}` - Remove number
+- `GET /api/wa/phone-numbers` - List numbers
+- `GET /api/wa/phone-numbers/sync` - Sync from Meta
+- `GET /api/wa/phone-numbers/{id}` - Get number
+- `POST /api/wa/phone-numbers/{id}/webhook/test` - Test webhook
+- `DELETE /api/wa/phone-numbers/{id}` - Remove number
 
 #### Quick Replies
-- `GET /api/wa/api/quick-replies` - List quick replies
-- `POST /api/wa/api/quick-replies` - Create
-- `PUT /api/wa/api/quick-replies/{id}` - Update
-- `DELETE /api/wa/api/quick-replies/{id}` - Delete
+- `GET /api/wa/quick-replies` - List quick replies
+- `POST /api/wa/quick-replies` - Create
+- `PUT /api/wa/quick-replies/{id}` - Update
+- `DELETE /api/wa/quick-replies/{id}` - Delete
 
 #### Flows
-- `GET /api/wa/api/flows` - List flows
-- `POST /api/wa/api/flows` - Create flow
-- `GET /api/wa/api/flows/{id}` - Get flow
-- `PUT /api/wa/api/flows/{id}` - Update flow
-- `DELETE /api/wa/api/flows/{id}` - Delete flow
-- `POST /api/wa/api/flows/{id}/toggle` - Enable/disable
-- `POST /api/wa/api/flows/{id}/steps` - Update steps
+- `GET /api/wa/flows` - List flows
+- `POST /api/wa/flows` - Create flow
+- `GET /api/wa/flows/{id}` - Get flow
+- `PUT /api/wa/flows/{id}` - Update flow
+- `DELETE /api/wa/flows/{id}` - Delete flow
+- `POST /api/wa/flows/{id}/toggle` - Enable/disable
+- `POST /api/wa/flows/{id}/steps` - Update steps
 
 #### Tickets
-- `GET /api/wa/api/tickets` - List tickets
-- `POST /api/wa/api/tickets` - Create ticket
-- `GET /api/wa/api/tickets/{id}` - Get ticket
-- `PUT /api/wa/api/tickets/{id}` - Update ticket
-- `POST /api/wa/api/tickets/{id}/assign` - Assign agent
-- `POST /api/wa/api/tickets/{id}/resolve` - Resolve ticket
-- `POST /api/wa/api/tickets/{id}/close` - Close ticket
+- `GET /api/wa/tickets` - List tickets
+- `POST /api/wa/tickets` - Create ticket
+- `GET /api/wa/tickets/{id}` - Get ticket
+- `PUT /api/wa/tickets/{id}` - Update ticket
+- `POST /api/wa/tickets/{id}/assign` - Assign agent
+- `POST /api/wa/tickets/{id}/resolve` - Resolve ticket
+- `POST /api/wa/tickets/{id}/close` - Close ticket
 
 #### Agents
-- `GET /api/wa/api/agents` - List agents
-- `POST /api/wa/api/agents` - Create agent
-- `PUT /api/wa/api/agents/{id}` - Update agent
-- `DELETE /api/wa/api/agents/{id}` - Delete agent
+- `GET /api/wa/agents` - List agents
+- `POST /api/wa/agents` - Create agent
+- `PUT /api/wa/agents/{id}` - Update agent
+- `DELETE /api/wa/agents/{id}` - Delete agent
 
 #### Notifications
-- `GET /api/wa/api/notifications` - List notifications
-- `PUT /api/wa/api/notifications/{id}/read` - Mark as read
-- `PUT /api/wa/api/notifications/read-all` - Mark all as read
+- `GET /api/wa/notifications` - List notifications
+- `PUT /api/wa/notifications/{id}/read` - Mark as read
+- `PUT /api/wa/notifications/read-all` - Mark all as read
 
 #### Analytics
-- `GET /api/wa/api/analytics/overview` - Dashboard overview
-- `GET /api/wa/api/analytics/messages` - Message stats
-- `GET /api/wa/api/analytics/conversations` - Conversation stats
-- `GET /api/wa/api/analytics/agents` - Agent performance
+- `GET /api/wa/analytics/overview` - Dashboard overview
+- `GET /api/wa/analytics/messages` - Message stats
+- `GET /api/wa/analytics/conversations` - Conversation stats
+- `GET /api/wa/analytics/agents` - Agent performance
 
 ## Usage
 
