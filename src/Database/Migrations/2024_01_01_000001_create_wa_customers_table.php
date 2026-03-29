@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wa_customers')) {
+            return;
+        }
+
         Schema::create('wa_customers', function (Blueprint $table) {
             $table->id();
             $table->string('meta_user_id')->unique()->nullable();

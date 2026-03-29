@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wa_ticket_messages')) {
+            return;
+        }
+
         Schema::create('wa_ticket_messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_id')->constrained('wa_tickets')->cascadeOnDelete();
@@ -24,11 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('wa_ticket_messages', function (Blueprint $table) {
-            $table->dropForeign(['ticket_id']);
-            $table->dropForeign(['message_id']);
-            $table->dropForeign(['agent_id']);
-        });
         Schema::dropIfExists('wa_ticket_messages');
     }
 };

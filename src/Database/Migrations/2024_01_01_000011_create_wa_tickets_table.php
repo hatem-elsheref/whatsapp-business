@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wa_tickets')) {
+            return;
+        }
+
         Schema::create('wa_tickets', function (Blueprint $table) {
             $table->id();
             $table->string('ticket_number')->unique();
@@ -32,12 +36,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('wa_tickets', function (Blueprint $table) {
-            $table->dropForeign(['customer_id']);
-            $table->dropForeign(['conversation_id']);
-            $table->dropForeign(['created_by_agent_id']);
-            $table->dropForeign(['assigned_agent_id']);
-        });
         Schema::dropIfExists('wa_tickets');
     }
 };

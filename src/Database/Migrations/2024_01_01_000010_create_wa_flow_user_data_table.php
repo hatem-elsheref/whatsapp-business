@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('wa_flow_user_data')) {
+            return;
+        }
+
         Schema::create('wa_flow_user_data', function (Blueprint $table) {
             $table->id();
             $table->foreignId('flow_id')->constrained('wa_flows')->cascadeOnDelete();
@@ -31,12 +35,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('wa_flow_user_data', function (Blueprint $table) {
-            $table->dropForeign(['flow_id']);
-            $table->dropForeign(['conversation_id']);
-            $table->dropForeign(['customer_id']);
-            $table->dropForeign(['current_step_id']);
-        });
         Schema::dropIfExists('wa_flow_user_data');
     }
 };
