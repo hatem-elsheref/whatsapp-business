@@ -56,4 +56,12 @@ return [
             ],
         ],
     ],
+
+    'seeder' => [
+        'admin_email' => env('WA_ADMIN_EMAIL', 'admin@whatsapp.local'),
+        'admin_password' => env('WA_ADMIN_PASSWORD', 'admin123'),
+        'admin_name' => env('WA_ADMIN_NAME', 'Admin'),
+        'customer_name' => env('WA_CUSTOMER_NAME', 'WhatsApp Business'),
+        'customer_email' => env('WA_CUSTOMER_EMAIL', 'admin@whatsapp.local'),
+    ],
 ];
