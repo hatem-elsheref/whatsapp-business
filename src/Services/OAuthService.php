@@ -311,4 +311,73 @@ class OAuthService
 
         return true;
     }
+
+    public function verifyAccessToken(string $accessToken): ?array
+    {
+        try {
+            $response = Http::get("{$this->graphUrl}/{$this->apiVersion}/debug_token", [
+                'input_token' => $accessToken,
+                'access_token' => "{$this->appId}|{$this->appSecret}",
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['data']['is_valid']) && $data['data']['is_valid']) {
+                    return $data['data'];
+                }
+            }
+
+            return null;
+        } catch (GuzzleException $e) {
+            Log::error('Verify access token failed', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    public function getBusinessInfo(string $accessToken): array
+    {
+        try {
+            $response = Http::get("{$this->graphUrl}/{$this->apiVersion}/me", [
+                'access_token' => $accessToken,
+                'fields' => 'id,name,email',
+            ]);
+
+            return $response->successful() ? $response->json() : [];
+        } catch (GuzzleException $e) {
+            Log::error('Get business info failed', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+    public function syncSinglePhoneNumber(Customer $customer, string $phoneNumberId, string $accessToken): ?PhoneNumber
+    {
+        try {
+            $response = Http::get("{$this->graphUrl}/{$this->apiVersion}/{$phoneNumberId}", [
+                'access_token' => $accessToken,
+                'fields' => 'id,display_phone_number,verified_name,quality_score',
+            ]);
+
+            if ($response->successful()) {
+                $phoneData = $response->json();
+                
+                return PhoneNumber::updateOrCreate(
+                    ['phone_number_id' => $phoneData['id']],
+                    [
+                        'customer_id' => $customer->id,
+                        'raw_number' => $phoneData['id'],
+                        'display_number' => $phoneData['display_phone_number'],
+                        'name' => $phoneData['verified_name'] ?? null,
+                        'quality_score' => $phoneData['quality_score'] ?? null,
+                        'status' => 'connected',
+                        'is_active' => true,
+                    ]
+                );
+            }
+
+            return null;
+        } catch (GuzzleException $e) {
+            Log::error('Sync single phone number failed', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
 }

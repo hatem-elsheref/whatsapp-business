@@ -11,18 +11,19 @@ return new class extends Migration
         Schema::create('wa_phone_numbers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('wa_customers')->cascadeOnDelete();
-            $table->string('phone_number_id')->unique()->comment('Meta Phone Number ID');
-            $table->string('raw_number')->comment('WhatsApp ID (wa_id)');
-            $table->string('display_number')->comment('Formatted display number');
-            $table->string('name')->nullable()->comment('Optional display name');
-            $table->string('waba_id')->comment('WhatsApp Business Account ID');
+            $table->string('phone_number_id')->unique()->nullable();
+            $table->string('raw_number');
+            $table->string('display_number');
+            $table->string('verified_name')->nullable();
+            $table->string('name')->nullable();
+            $table->string('waba_id')->nullable();
             $table->string('waba_name')->nullable();
             $table->string('quality_score')->nullable();
             $table->enum('status', ['connected', 'disconnected', 'pending'])->default('connected');
             $table->boolean('webhook_verified')->default(false);
             $table->string('webhook_url')->nullable();
             $table->string('webhook_verify_token')->nullable();
-            $table->json('capabilities')->nullable()->comment('Messaging types supported');
+            $table->json('capabilities')->nullable();
             $table->boolean('is_default')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -35,6 +36,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::table('wa_phone_numbers', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
+        });
         Schema::dropIfExists('wa_phone_numbers');
     }
 };

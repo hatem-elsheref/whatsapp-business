@@ -10,26 +10,33 @@ return new class extends Migration
     {
         Schema::create('wa_flow_user_data', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('wa_customers')->cascadeOnDelete();
-            $table->foreignId('conversation_id')->constrained('wa_conversations')->cascadeOnDelete();
             $table->foreignId('flow_id')->constrained('wa_flows')->cascadeOnDelete();
-            $table->json('variables')->comment('Collected data as key-value pairs');
-            $table->integer('current_step')->default(0);
-            $table->string('current_step_id')->nullable();
-            $table->enum('status', ['active', 'completed', 'abandoned', 'timeout'])->default('active');
+            $table->foreignId('conversation_id')->constrained('wa_conversations')->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained('wa_customers')->cascadeOnDelete();
+            $table->string('wa_id');
+            $table->foreignId('current_step_id')->nullable()->constrained('wa_flow_steps')->nullOnDelete();
+            $table->enum('status', ['active', 'completed', 'abandoned', 'expired'])->default('active');
+            $table->json('variables')->nullable();
+            $table->text('current_response')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('expires_at')->nullable();
-            $table->json('metadata')->nullable();
             $table->timestamps();
             
-            $table->index(['conversation_id', 'flow_id']);
-            $table->index(['status', 'expires_at']);
+            $table->index(['flow_id', 'status']);
+            $table->index(['conversation_id']);
+            $table->index('wa_id');
         });
     }
 
     public function down(): void
     {
+        Schema::table('wa_flow_user_data', function (Blueprint $table) {
+            $table->dropForeign(['flow_id']);
+            $table->dropForeign(['conversation_id']);
+            $table->dropForeign(['customer_id']);
+            $table->dropForeign(['current_step_id']);
+        });
         Schema::dropIfExists('wa_flow_user_data');
     }
 };

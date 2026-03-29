@@ -11,26 +11,27 @@ return new class extends Migration
         Schema::create('wa_flow_steps', function (Blueprint $table) {
             $table->id();
             $table->foreignId('flow_id')->constrained('wa_flows')->cascadeOnDelete();
-            $table->integer('step_order');
-            $table->string('step_id')->unique()->comment('Internal step identifier');
-            $table->enum('step_type', ['message', 'question', 'condition', 'action', 'delay', 'end', 'api_call', 'ticket'])->default('message');
-            $table->json('content')->nullable()->comment('Message body, buttons, etc');
-            $table->foreignId('next_step_id')->nullable()->constrained('wa_flow_steps')->nullOnDelete();
-            $table->json('branches')->nullable()->comment('For conditional steps');
-            $table->integer('step_timeout_seconds')->default(0)->comment('Wait for response, 0 = no wait');
-            $table->string('collected_variable')->nullable()->comment('Store response as variable');
-            $table->string('variable_type')->nullable()->comment('Type: text, number, email, phone');
-            $table->json('validation_rules')->nullable();
-            $table->json('actions')->nullable()->comment('API calls, ticket creation, etc');
-            $table->json('metadata')->nullable();
+            $table->string('name');
+            $table->enum('step_type', ['message', 'question', 'condition', 'action', 'delay', 'end'])->default('message');
+            $table->integer('order')->default(0);
+            $table->json('config')->nullable();
+            $table->json('buttons')->nullable();
+            $table->json('conditions')->nullable();
+            $table->json('actions')->nullable();
+            $table->integer('timeout_seconds')->nullable();
+            $table->string('timeout_action')->nullable();
+            $table->boolean('is_entry_point')->default(false);
             $table->timestamps();
             
-            $table->index(['flow_id', 'step_order']);
+            $table->index('flow_id');
         });
     }
 
     public function down(): void
     {
+        Schema::table('wa_flow_steps', function (Blueprint $table) {
+            $table->dropForeign(['flow_id']);
+        });
         Schema::dropIfExists('wa_flow_steps');
     }
 };

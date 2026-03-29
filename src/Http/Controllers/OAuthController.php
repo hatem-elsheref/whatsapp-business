@@ -163,4 +163,90 @@ class OAuthController
             'expires_at' => $customer->token_expires_at,
         ]);
     }
+
+    public function manualSetup(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'app_id' => 'required|string',
+                'app_secret' => 'nullable|string',
+                'access_token' => 'required|string',
+                'phone_number_id' => 'nullable|string',
+            ]);
+
+            $agent = $request->user();
+            $customer = $agent->customer;
+
+            // Verify the access token works
+            $tokenInfo = $this->oauthService->verifyAccessToken($validated['access_token']);
+
+            if (!$tokenInfo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid access token. Please check and try again.',
+                ], 400);
+            }
+
+            // Get business info
+            $businessInfo = $this->oauthService->getBusinessInfo($validated['access_token']);
+
+            // Update or create customer
+            $customer->update([
+                'fb_app_id' => $validated['app_id'],
+                'fb_app_secret' => $validated['app_secret'] ? encrypt($validated['app_secret']) : null,
+                'access_token' => encrypt($validated['access_token']),
+                'token_expires_at' => now()->addDays(60),
+                'business_name' => $businessInfo['name'] ?? 'WhatsApp Business',
+            ]);
+
+            // Sync phone numbers if app_id is provided
+            $phoneNumbers = [];
+            if ($validated['phone_number_id']) {
+                // Sync specific phone number
+                $phoneNumber = $this->oauthService->syncSinglePhoneNumber(
+                    $customer,
+                    $validated['phone_number_id'],
+                    $validated['access_token']
+                );
+                if ($phoneNumber) {
+                    $phoneNumbers[] = $phoneNumber;
+                }
+            } else {
+                // Sync all phone numbers
+                $phoneNumbers = $this->oauthService->syncPhoneNumbers($customer);
+            }
+
+            Log::info('Manual setup completed', [
+                'customer_id' => $customer->id,
+                'phone_numbers_count' => count($phoneNumbers),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Account configured successfully',
+                'phone_numbers' => collect($phoneNumbers)->map(fn($pn) => [
+                    'id' => $pn->id,
+                    'display_number' => $pn->display_number,
+                    'verified_name' => $pn->verified_name,
+                    'webhook_verified' => $pn->webhook_verified,
+                ]),
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Manual setup error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Setup failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

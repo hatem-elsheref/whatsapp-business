@@ -10,21 +10,23 @@ return new class extends Migration
     {
         Schema::create('wa_customers', function (Blueprint $table) {
             $table->id();
-            $table->string('meta_user_id')->unique()->comment('Facebook User ID from OAuth');
+            $table->string('meta_user_id')->unique()->nullable();
             $table->string('business_name');
             $table->string('business_email')->nullable();
-            $table->text('access_token')->nullable()->comment('Long-lived Meta access token (encrypted)');
+            $table->string('fb_app_id')->nullable();
+            $table->text('fb_app_secret')->nullable();
+            $table->text('access_token')->nullable();
             $table->timestamp('token_expires_at')->nullable();
-            $table->text('refresh_token')->nullable()->comment('Encrypted refresh token');
-            $table->string('meta_business_id')->nullable()->comment('Business Manager ID');
-            $table->string('meta_business_name')->nullable();
+            $table->text('refresh_token')->nullable();
+            $table->string('fb_business_id')->nullable();
+            $table->string('fb_page_id')->nullable();
+            $table->string('wa_business_account_id')->nullable();
             $table->json('settings')->nullable();
-            $table->json('permissions')->nullable()->comment('Granted OAuth permissions');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_verified')->default(false);
             $table->timestamps();
             
-            $table->index('meta_business_id');
+            $table->index('fb_business_id');
             $table->index('business_email');
         });
     }

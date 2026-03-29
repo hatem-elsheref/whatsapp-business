@@ -11,11 +11,11 @@ return new class extends Migration
         Schema::create('wa_ticket_messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_id')->constrained('wa_tickets')->cascadeOnDelete();
-            $table->foreignId('agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
             $table->foreignId('message_id')->nullable()->constrained('wa_messages')->nullOnDelete();
-            $table->enum('type', ['note', 'reply', 'system', 'internal'])->default('note');
-            $table->text('content');
-            $table->boolean('is_internal')->default(false)->comment('Only visible to agents');
+            $table->foreignId('agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
+            $table->enum('type', ['note', 'reply', 'system'])->default('note');
+            $table->text('message');
+            $table->boolean('is_internal')->default(false);
             $table->timestamps();
             
             $table->index('ticket_id');
@@ -24,6 +24,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::table('wa_ticket_messages', function (Blueprint $table) {
+            $table->dropForeign(['ticket_id']);
+            $table->dropForeign(['message_id']);
+            $table->dropForeign(['agent_id']);
+        });
         Schema::dropIfExists('wa_ticket_messages');
     }
 };

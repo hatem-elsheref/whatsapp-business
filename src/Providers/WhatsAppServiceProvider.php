@@ -68,6 +68,7 @@ class WhatsAppServiceProvider extends ServiceProvider
             Route::prefix('oauth')->group(function () {
                 Route::get('/redirect', 'OAuthController@redirectToProvider')->name('oauth.redirect');
                 Route::get('/callback', 'OAuthController@handleCallback')->name('oauth.callback');
+                Route::post('/manual-setup', 'OAuthController@manualSetup')->name('oauth.manual')->middleware('auth:sanctum');
                 Route::delete('/disconnect', 'OAuthController@disconnect')->name('oauth.disconnect')->middleware('auth:sanctum');
                 Route::post('/refresh', 'OAuthController@refreshToken')->name('oauth.refresh')->middleware('auth:sanctum');
             });

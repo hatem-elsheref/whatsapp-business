@@ -10,36 +10,34 @@ return new class extends Migration
     {
         Schema::create('wa_tickets', function (Blueprint $table) {
             $table->id();
+            $table->string('ticket_number')->unique();
             $table->foreignId('customer_id')->constrained('wa_customers')->cascadeOnDelete();
             $table->foreignId('conversation_id')->nullable()->constrained('wa_conversations')->nullOnDelete();
-            $table->string('ticket_number')->unique();
+            $table->foreignId('created_by_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
+            $table->foreignId('assigned_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
             $table->string('subject');
             $table->text('description')->nullable();
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
-            $table->enum('status', ['open', 'pending', 'on_hold', 'resolved', 'closed'])->default('open');
-            $table->foreignId('assigned_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
-            $table->foreignId('created_by_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
-            $table->foreignId('closed_by_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
-            $table->foreignId('resolved_by_agent_id')->nullable()->constrained('wa_agents')->nullOnDelete();
-            $table->text('resolution_notes')->nullable();
-            $table->timestamp('first_response_at')->nullable();
+            $table->enum('status', ['open', 'pending', 'resolved', 'closed'])->default('open');
+            $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
+            $table->json('metadata')->nullable();
             $table->timestamp('resolved_at')->nullable();
             $table->timestamp('closed_at')->nullable();
-            $table->integer('response_count')->default(0);
-            $table->integer('message_count')->default(0);
-            $table->json('tags')->nullable();
-            $table->json('metadata')->nullable();
             $table->timestamps();
             
             $table->index(['customer_id', 'status']);
             $table->index(['assigned_agent_id', 'status']);
-            $table->index('priority');
             $table->index('ticket_number');
         });
     }
 
     public function down(): void
     {
+        Schema::table('wa_tickets', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
+            $table->dropForeign(['conversation_id']);
+            $table->dropForeign(['created_by_agent_id']);
+            $table->dropForeign(['assigned_agent_id']);
+        });
         Schema::dropIfExists('wa_tickets');
     }
 };

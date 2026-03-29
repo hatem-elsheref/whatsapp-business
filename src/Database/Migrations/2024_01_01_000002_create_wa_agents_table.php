@@ -11,12 +11,11 @@ return new class extends Migration
         Schema::create('wa_agents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('wa_customers')->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->comment('Link to main auth system');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password')->nullable()->comment('Hashed password for direct login');
+            $table->string('password')->nullable();
             $table->string('avatar_url')->nullable();
-            $table->enum('role', ['admin', 'agent'])->default('agent');
+            $table->enum('role', ['admin', 'supervisor', 'agent'])->default('agent');
             $table->boolean('is_active')->default(true);
             $table->string('pusher_channel')->nullable();
             $table->timestamp('last_active_at')->nullable();
@@ -24,12 +23,15 @@ return new class extends Migration
             $table->timestamps();
             
             $table->index(['customer_id', 'email']);
-            $table->index('user_id');
+            $table->index(['customer_id', 'is_active']);
         });
     }
 
     public function down(): void
     {
+        Schema::table('wa_agents', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
+        });
         Schema::dropIfExists('wa_agents');
     }
 };

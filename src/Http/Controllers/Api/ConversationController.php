@@ -1,6 +1,6 @@
 <?php
 
-namespace WhatsApp\Business\Http\Controllers;
+namespace WhatsApp\Business\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
